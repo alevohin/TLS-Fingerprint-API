@@ -31,7 +31,7 @@ func main() {
 	fmt.Println("Hosting a TLS API on port " + *port)
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
 	http.HandleFunc("/", handleReq)
-	err := http.ListenAndServe(":"+string(*port), nil)
+	err := http.ListenAndServe("127.0.0.1:"+string(*port), nil)
 	if err != nil {
 		log.Fatalln("Error starting the HTTP server:", err)
 	}
