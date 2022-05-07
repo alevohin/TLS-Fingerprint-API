@@ -75,7 +75,7 @@ func handleReq(w http.ResponseWriter, r *http.Request) {
 	timeout, err := strconv.Atoi(timeoutraw)
 	if err != nil {
 		//default timeout of 6
-		timeout = 6
+		timeout = 25
 	}
 	if timeout > 60 {
 		http.Error(w, "ERROR: Timeout cannot be longer than 60 seconds", http.StatusBadRequest)
