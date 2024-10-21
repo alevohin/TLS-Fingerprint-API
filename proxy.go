@@ -26,7 +26,7 @@ import (
 //var client http.Client
 
 func main() {
-	port := flag.String("port", "8082", "A port number (default 8082)")
+	port := flag.String("port", "8083", "A port number (default 8082)")
 	flag.Parse()
 	fmt.Println("Hosting a TLS API on port " + *port)
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
@@ -204,11 +204,11 @@ func handleReq(w http.ResponseWriter, r *http.Request) {
 
 	//forward response headers
 	for k, v := range resp.Header {
-		if k != "Content-Length" && k != "Content-Encoding" {
-			for _, kv := range v {
-				w.Header().Add(k, kv)
-			}
+//		if k != "Content-Length" && k != "Content-Encoding" {
+		for _, kv := range v {
+			w.Header().Add(k, kv)
 		}
+//		}
 	}
 	w.WriteHeader(resp.StatusCode)
 	var status string
@@ -220,42 +220,47 @@ func handleReq(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("[%s][%s][%s]\r\n", color.YellowString("%s", time.Now().Format("2012-11-01T22:08:41+00:00")), color.BlueString("%s", pageURL), status)
 
 	//forward decoded response body
-	encoding := resp.Header["Content-Encoding"]
+//	encoding := resp.Header["Content-Encoding"]
 	body, err := ioutil.ReadAll(resp.Body)
 	finalres := ""
 	if err != nil {
 		panic(err)
 	}
 	finalres = string(body)
-	if len(encoding) > 0 {
-		if encoding[0] == "gzip" {
-			unz, err := gUnzipData(body)
-			if err != nil {
-				panic(err)
-			}
-			finalres = string(unz)
-		} else if encoding[0] == "deflate" {
-			unz, err := enflateData(body)
-			if err != nil {
-				panic(err)
-			}
-			finalres = string(unz)
-		} else if encoding[0] == "br" {
-			unz, err := unBrotliData(body)
-			if err != nil {
-				panic(err)
-			}
-			finalres = string(unz)
-		} else {
-			fmt.Println("UNKNOWN ENCODING: " + encoding[0])
-			finalres = string(body)
-		}
-	} else {
-		finalres = string(body)
-	}
-	if _, err := fmt.Fprint(w, finalres); err != nil {
-		log.Println("Error writing body:", err)
-	}
+        if _, err := fmt.Fprint(w, finalres); err != nil {
+            log.Println("Error writing body:", err)
+    	}
+
+
+//	if len(encoding) > 0 {
+//		if encoding[0] == "gzip" {
+//			unz, err := gUnzipData(body)
+//			if err != nil {
+//				panic(err)
+//			}
+//			finalres = string(unz)
+//		} else if encoding[0] == "deflate" {
+//			unz, err := enflateData(body)
+//			if err != nil {
+//				panic(err)
+//			}
+////			finalres = string(unz)
+//		} else if encoding[0] == "br" {
+//			unz, err := unBrotliData(body)
+//			if err != nil {
+//				panic(err)
+//			}
+//			finalres = string(unz)
+//		} else {
+//			fmt.Println("UNKNOWN ENCODING: " + encoding[0])
+//			finalres = string(body)
+//		}
+//	} else {
+//		finalres = string(body)
+//	}
+//	if _, err := fmt.Fprint(w, finalres); err != nil {
+//		log.Println("Error writing body:", err)
+//	}
 }
 
 func gUnzipData(data []byte) (resData []byte, err error) {
